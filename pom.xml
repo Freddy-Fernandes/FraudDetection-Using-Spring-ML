@@ -4,7 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-<mainClass>com.example.frauddetection.FraudDetectionApplication</mainClass>
 <packaging>jar</packaging>
 
     <parent>
@@ -144,10 +143,6 @@
             <configuration>
                 <mainClass>com.example.frauddetection.FraudDetectionApplication</mainClass>
             </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
         </plugin>
     </plugins>
 </build>
