@@ -2,7 +2,7 @@ FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 
-COPY target/*.jar app.jar
+COPY target/fraud-detection-system-1.0.0.jar app.jar
 
 EXPOSE 8080
 
