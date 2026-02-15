@@ -1,19 +1,9 @@
-FROM eclipse-temurin:17-jdk-alpine AS build
+FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 
-# Copy maven wrapper and pom.xml
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
+COPY target/*.jar app.jar
 
-# 🔴 ADD THIS LINE (important)
-RUN chmod +x mvnw
+EXPOSE 8080
 
-# Download dependencies
-RUN ./mvnw dependency:go-offline
-
-# Copy source code
-COPY src ./src
-
-# Build the application
-RUN ./mvnw clean package -DskipTests
+ENTRYPOINT ["java","-jar","app.jar"]
