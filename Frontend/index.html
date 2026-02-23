@@ -360,7 +360,7 @@
             };
 
             try {
-                const response = await fetch(`${API_BASE}/users/register`, {
+               const response = await fetch(`${API_BASE}/transactions/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
