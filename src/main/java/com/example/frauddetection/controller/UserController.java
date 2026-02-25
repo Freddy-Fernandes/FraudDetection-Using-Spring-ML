@@ -14,6 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -132,7 +136,39 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
+    @GetMapping("/all")
+public ResponseEntity<List<UserResponse>> getAllUsers() {
+    log.info("Fetching all users");
     
+    try {
+        List<User> users = userRepository.findAll();
+        
+        List<UserResponse> responses = users.stream()
+            .map(user -> UserResponse.builder()
+                .success(true)
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .phoneNumber(user.getPhoneNumber())
+                .trustScore(user.getTrustScore())
+                .totalTransactions(user.getTotalTransactions())
+                .fraudCount(user.getFraudCount())
+                .accountLocked(user.getAccountLocked())
+                .enabled(user.getEnabled())
+                .createdAt(user.getCreatedAt())
+                .build())
+            .collect(Collectors.toList());
+        
+        return ResponseEntity.ok(responses);
+        
+    } catch (Exception e) {
+        log.error("Error fetching all users", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ArrayList<>());
+    }
+}
+
     /**
      * Get user by userId OR email
      * GET /api/users/{identifier}
@@ -265,6 +301,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+    
     
     /**
      * Update user trust score manually
