@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Login Screen */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background: #764ba2;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Dashboard (reuse from admin.html but add logout) */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .header-user {
+            text-align: right;
+        }
+        
+        .header-user .user-info {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .btn-logout {
+            margin-top: 10px;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .badge.admin {
+            background: #ffc107;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-header">
+            <h1>Admin Login</h1>
+            <p>Fraud Detection System</p>
+        </div>
+        <div id="loginError" class="error-message hidden"></div>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" required autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" required autocomplete="current-password">
+            </div>
+            <button type="button" type="submit" class="btn">Login</button>
+        </form>
+        <p style="text-align: center; margin-top: 20px; color: #6c757d; font-size: 0.9em;">
+            Admin access only • Secure login required
+        </p>
+    </div>
+
+    <!-- Dashboard (shown after login) -->
+    <div id="dashboardScreen" class="hidden">
+        <div class="container">
+            <div class="header">
+                <div class="header-title">
+                    <h1>Admin Dashboard</h1>
+                    <p>Fraud Detection System Management</p>
+                </div>
+                <div class="header-user">
+                    <div class="user-info">
+                        <div><strong id="userEmail"></strong></div>
+                        <div><span class="badge admin" id="userRole">ADMIN</span></div>
+                    </div>
+                    <button type="button" class="btn-logout" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            <div style="padding: 30px;">
+                <h2>✅ Authenticated Successfully</h2>
+                <p style="margin-top: 10px; color: #6c757d;">
+                    You are now logged in as an administrator. 
+                    This is a secure admin panel with JWT authentication.
+                </p>
+                <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                    <h3>🔐 Security Features Enabled:</h3>
+                    <ul style="margin-top: 15px; padding-left: 20px; line-height: 1.8;">
+                        <li>✅ Password-based authentication</li>
+                        <li>✅ JWT token authentication</li>
+                        <li>✅ Admin role verification</li>
+                        <li>✅ Secure session management</li>
+                        <li>✅ Token expiration (24 hours)</li>
+                        <li>✅ Protected API endpoints</li>
+                    </ul>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button type="button" class="btn" onclick="testSecureAPI()">Test Secure API Call</button>
+                </div>
+                <div id="apiTestResult" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://frauddetection-using-spring-ml.onrender.com/api';
+        let authToken = null;
+        let currentUser = null;
+
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('adminToken');
+            const user = localStorage.getItem('adminUser');
+            
+            if (token && user) {
+                authToken = token;
+                currentUser = JSON.parse(user);
+                showDashboard();
+            }
+        });
+
+        // Handle login
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.classList.add('hidden');
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.role === 'ADMIN') {
+                    // Save token and user info
+                    authToken = result.token;
+                    currentUser = {
+                        email: result.email,
+                        name: result.name,
+                        role: result.role,
+                        userId: result.userId
+                    };
+                    
+                    localStorage.setItem('adminToken', authToken);
+                    localStorage.setItem('adminUser', JSON.stringify(currentUser));
+                    
+                    showDashboard();
+                } else if (result.role !== 'ADMIN') {
+                    showError('Access denied. Admin privileges required.');
+                } else {
+                    showError(result.message || 'Login failed');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Login failed. Please check your connection.');
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        // Show dashboard
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.remove('hidden');
+            
+            document.getElementById('userEmail').textContent = currentUser.email;
+            document.getElementById('userRole').textContent = currentUser.role;
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminUser');
+                authToken = null;
+                currentUser = null;
+                
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('dashboardScreen').classList.add('hidden');
+                document.getElementById('loginForm').reset();
+            }
+        }
+
+        // Test secure API call
+        async function testSecureAPI() {
+            const resultDiv = document.getElementById('apiTestResult');
+            resultDiv.innerHTML = '<p>Testing secure API...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/all`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const users = await response.json();
+                    resultDiv.innerHTML = `
+                        <div style="background: #d4edda; padding: 15px; border-radius: 8px; color: #155724;">
+                            <strong>✅ Success!</strong><br>
+                            Secure API call successful. Found ${users.length} users in database.
+                        </div>
+                    `;
+                } else if (response.status === 403) {
+                    resultDiv.innerHTML = `
+                        <div style="background: #f8d7da; padding: 15px; border-radius: 8px; color: #721c24;">
+                            <strong>❌ Access Denied</strong><br>
+                            Your token doesn't have admin privileges.
+                        </div>
+                    `;
+                } else if (response.status === 401) {
+                    resultDiv.innerHTML = `
+                        <div style="background: #f8d7da; padding: 15px; border-radius: 8px; color: #721c24;">
+                            <strong>❌ Unauthorized</strong><br>
+                            Your session has expired. Please login again.
+                        </div>
+                    `;
+                    setTimeout(() => logout(), 2000);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div style="background: #f8d7da; padding: 15px; border-radius: 8px; color: #721c24;">
+                        <strong>❌ Error</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
