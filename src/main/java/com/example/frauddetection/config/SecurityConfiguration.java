@@ -33,7 +33,9 @@ public class SecurityConfiguration {
                                                                 "/api/auth/register",
                                                                 "/api/transactions/register",
                                                                 "/api/users/register",
-                                                                "/api/users/login")
+                                                                "/api/users/login",
+                                                                "/api/transactions",
+                                                                "/api/transactions/**")
                                                 .permitAll()
 
                                                 // Admin-only endpoints
