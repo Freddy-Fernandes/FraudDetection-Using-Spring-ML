@@ -137,9 +137,9 @@ String role = isAdminEmail(savedUser.getEmail()) ? "ADMIN" : "USER";
      */
     private boolean isAdminEmail(String email) {
         // Add your admin emails here
-        return email.equals("admin@frauddetection.com") ||
-                email.equals("freddyfernandes506@gmail.com") ||
-                email.endsWith("@admin.frauddetection.com");
+        return email.equals("admin@fraud.detection.com") ||
+                email.equals("fernandesfreddy2005@gmail.com") ||
+                email.endsWith("freddy@admin.frauddetection.com");
     }
 
     // DTOs
