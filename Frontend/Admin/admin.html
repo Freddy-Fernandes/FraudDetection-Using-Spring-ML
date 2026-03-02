@@ -3,156 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Admin Dashboard</title>
+    <title>Secure Admin Dashboard - Fraud Detection</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #31572c 0%, #90a955 100%); min-height: 100vh; padding: 20px; }
         
         /* Login Screen */
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
+        .login-container { max-width: 400px; margin: 100px auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .login-header { text-align: center; margin-bottom: 30px; }
+        .login-header h1 { font-size: 2em; color: #31572c; margin-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #495057; }
+        .form-group input { width: 100%; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1em; }
+        .form-group input:focus { outline: none; border-color: #31572c; }
+        .btn-primary { width: 100%; padding: 12px; background: #31572c; color: white; border: none; border-radius: 8px; font-size: 1em; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .btn-primary:hover { background: #90a955; }
+        .error-message { background: #656d4a; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        .hidden { display: none !important; }
         
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .login-header h1 {
-            font-size: 2em;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #495057;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1em;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        
-        .btn:hover {
-            background: #764ba2;
-        }
-        
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        /* Dashboard (reuse from admin.html but add logout) */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .header-title h1 {
-            font-size: 2em;
-            margin-bottom: 5px;
-        }
-        
-        .header-user {
-            text-align: right;
-        }
-        
-        .header-user .user-info {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-        
-        .btn-logout {
-            margin-top: 10px;
-            padding: 8px 20px;
-            background: rgba(255,255,255,0.2);
-            border: 2px solid white;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .btn-logout:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-        
-        .badge.admin {
-            background: #ffc107;
-            color: #000;
-        }
+        /* Dashboard */
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #31572c 0%, #90a955 100%); color: white; padding: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header-title h1 { font-size: 2em; margin-bottom: 5px; }
+        .header-user { text-align: right; }
+        .header-user .user-info { font-size: 0.9em; opacity: 0.9; margin-bottom: 10px; }
+        .btn-logout { padding: 8px 20px; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-logout:hover { background: rgba(255,255,255,0.3); }
+        .nav { background: #f8f9fa; padding: 15px 30px; display: flex; gap: 15px; border-bottom: 2px solid #e9ecef; flex-wrap: wrap; }
+        .nav-btn { padding: 10px 20px; border: none; background: white; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .nav-btn:hover { background: #31572c; color: white; }
+        .nav-btn.active { background: #31572c; color: white; }
+        .content { padding: 30px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: linear-gradient(135deg, #31572c 0%, #90a955 100%); color: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .stat-card h3 { font-size: 0.9em; opacity: 0.9; margin-bottom: 10px; }
+        .stat-card .value { font-size: 2.5em; font-weight: bold; }
+        .search-box { margin-bottom: 20px; display: flex; gap: 10px; }
+        .search-box input { flex: 1; padding: 12px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1em; }
+        .search-box button { padding: 12px 24px; background: #31572c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .search-box button:hover { background: #90a955; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        thead { background: #31572c; color: white; }
+        th { padding: 15px; text-align: left; font-weight: 600; }
+        td { padding: 15px; border-bottom: 1px solid #f0f0f0; }
+        <!-- tr:hover { background: #f8f9fa; } -->
+        .badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 0.85em; font-weight: 600; }
+        .badge.success { background: #d4edda; color: #155724; }
+        .badge.danger { background: #656d4a; color: #721c24; }
+        .badge.warning { background: #fff3cd; color: #856404; }
+        .badge.info { background: #d1ecf1; color: #0c5460; }
+        .badge.admin { background: #ffc107; color: #000; }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9em; font-weight: 600; margin: 0 5px; transition: all 0.3s; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-success:hover { background: #218838; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-info { background: #ecf39e; color: black; }
+        .btn-info:hover { background: #ecf39e; color : black; opacity: 0.8; }
+        .loading { text-align: center; padding: 40px; color: #6c757d; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #31572c; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .empty-state { text-align: center; padding: 60px 20px; color: #6c757d; }
+        .user-details { background: #f8f9fa; padding: 20px; border-radius: 12px; margin-top: 20px; }
+        .user-details h3 { margin-bottom: 15px; color: #31572c; }
+        .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e9ecef; }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { font-weight: 600; color: #495057; }
+        .detail-value { color: #6c757d; }
+        .transaction-item { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .transaction-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .amount { font-size: 1.5em; font-weight: bold; color: #31572c; }
+        .fraud-score { font-size: 1.2em; font-weight: bold; }
+        .fraud-score.safe { color: #28a745; }
+        .fraud-score.warning { color: #ffc107; }
+        .fraud-score.danger { color: #dc3545; }
     </style>
 </head>
 <body>
@@ -172,14 +98,14 @@
                 <label>Password</label>
                 <input type="password" id="loginPassword" required autocomplete="current-password">
             </div>
-            <button type="submit" class="btn">Login</button>
+            <button type="submit" class="btn-primary">Login</button>
         </form>
         <p style="text-align: center; margin-top: 20px; color: #6c757d; font-size: 0.9em;">
             Admin access only • Secure login required
         </p>
     </div>
 
-    <!-- Dashboard (shown after login) -->
+    <!-- Dashboard Screen -->
     <div id="dashboardScreen" class="hidden">
         <div class="container">
             <div class="header">
@@ -192,30 +118,50 @@
                         <div><strong id="userEmail"></strong></div>
                         <div><span class="badge admin" id="userRole">ADMIN</span></div>
                     </div>
-                    <button type="submit" class="btn-logout" onclick="logout()">Logout</button>
+                    <button type="button" class="btn-logout" onclick="logout()">Logout</button>
                 </div>
             </div>
-            <div style="padding: 30px;">
-                <h2>✅ Authenticated Successfully</h2>
-                <p style="margin-top: 10px; color: #6c757d;">
-                    You are now logged in as an administrator. 
-                    This is a secure admin panel with JWT authentication.
-                </p>
-                <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
-                    <h3>🔐 Security Features Enabled:</h3>
-                    <ul style="margin-top: 15px; padding-left: 20px; line-height: 1.8;">
-                        <li>✅ Password-based authentication</li>
-                        <li>✅ JWT token authentication</li>
-                        <li>✅ Admin role verification</li>
-                        <li>✅ Secure session management</li>
-                        <li>✅ Token expiration (24 hours)</li>
-                        <li>✅ Protected API endpoints</li>
-                    </ul>
+
+            <div class="nav">
+                <button type="button" class="nav-btn active" onclick="showTab('dashboard')">Dashboard</button>
+                <button type="button" class="nav-btn" onclick="showTab('users')">All Users</button>
+                <button type="button" class="nav-btn" onclick="showTab('search')">Search User</button>
+                <button type="button" class="nav-btn" onclick="showTab('alerts')">Fraud Alerts</button>
+            </div>
+            
+            <div class="content">
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content active">
+                    <h2 style="margin-bottom: 20px;">System Overview</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card"><h3>Total Users</h3><div class="value" id="totalUsers">-</div></div>
+                        <div class="stat-card"><h3>Total Transactions</h3><div class="value" id="totalTransactions">-</div></div>
+                        <div class="stat-card"><h3>Fraud Alerts</h3><div class="value" id="totalAlerts">-</div></div>
+                        <div class="stat-card"><h3>Blocked Accounts</h3><div class="value" id="blockedAccounts">-</div></div>
+                    </div>
+                    <button type="button" class="btn btn-info" onclick="loadDashboard()">Refresh Statistics</button>
                 </div>
-                <div style="margin-top: 20px;">
-                    <button type="button" class="btn" onclick="testSecureAPI()">Test Secure API Call</button>
+                <!-- All Users Tab -->
+                <div id="users" class="tab-content">
+                    <h2 style="margin-bottom: 20px;">All Registered Users</h2>
+                    <button type="button" class="btn btn-info" onclick="loadAllUsers()">Load All Users</button>
+                    <div id="usersContainer"></div>
                 </div>
-                <div id="apiTestResult" style="margin-top: 20px;"></div>
+                <!-- Search User Tab -->
+                <div id="search" class="tab-content">
+                    <h2 style="margin-bottom: 20px;">Search User</h2>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Enter email, phone, or user ID">
+                        <button type="button" onclick="searchUser()">Search</button>
+                    </div>
+                    <div id="searchResult"></div>
+                </div>
+                <!-- Fraud Alerts Tab -->
+                <div id="alerts" class="tab-content">
+                    <h2 style="margin-bottom: 20px;">Recent Fraud Alerts</h2>
+                    <button type="button" class="btn btn-info" onclick="loadAlerts()">Load Fraud Alerts</button>
+                    <div id="alertsContainer"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -225,25 +171,21 @@
         let authToken = null;
         let currentUser = null;
 
-        // Check if already logged in
         window.addEventListener('load', () => {
             const token = localStorage.getItem('adminToken');
             const user = localStorage.getItem('adminUser');
-            
             if (token && user) {
                 authToken = token;
                 currentUser = JSON.parse(user);
                 showDashboard();
+                loadDashboard();
             }
         });
 
-        // Handle login
         async function handleLogin(event) {
             event.preventDefault();
-            
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            
             const errorDiv = document.getElementById('loginError');
             errorDiv.classList.add('hidden');
             
@@ -253,108 +195,251 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-                
                 const result = await response.json();
                 
                 if (result.success && result.role === 'ADMIN') {
-                    // Save token and user info
                     authToken = result.token;
-                    currentUser = {
-                        email: result.email,
-                        name: result.name,
-                        role: result.role,
-                        userId: result.userId
-                    };
-                    
+                    currentUser = { email: result.email, name: result.name, role: result.role, userId: result.userId };
                     localStorage.setItem('adminToken', authToken);
                     localStorage.setItem('adminUser', JSON.stringify(currentUser));
-                    
                     showDashboard();
+                    loadDashboard();
                 } else if (result.role !== 'ADMIN') {
                     showError('Access denied. Admin privileges required.');
                 } else {
                     showError(result.message || 'Login failed');
                 }
-                
             } catch (error) {
                 console.error('Login error:', error);
                 showError('Login failed. Please check your connection.');
             }
         }
 
-        // Show error message
         function showError(message) {
             const errorDiv = document.getElementById('loginError');
             errorDiv.textContent = message;
             errorDiv.classList.remove('hidden');
         }
 
-        // Show dashboard
         function showDashboard() {
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('dashboardScreen').classList.remove('hidden');
-            
             document.getElementById('userEmail').textContent = currentUser.email;
             document.getElementById('userRole').textContent = currentUser.role;
         }
 
-        // Logout
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.removeItem('adminToken');
                 localStorage.removeItem('adminUser');
                 authToken = null;
                 currentUser = null;
-                
                 document.getElementById('loginScreen').classList.remove('hidden');
                 document.getElementById('dashboardScreen').classList.add('hidden');
                 document.getElementById('loginForm').reset();
             }
         }
 
-        // Test secure API call
-        async function testSecureAPI() {
-            const resultDiv = document.getElementById('apiTestResult');
-            resultDiv.innerHTML = '<p>Testing secure API...</p>';
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function loadDashboard() {
+            document.getElementById('totalUsers').textContent = '-';
+            document.getElementById('totalTransactions').textContent = '-';
+            document.getElementById('totalAlerts').textContent = '-';
+            document.getElementById('blockedAccounts').textContent = '-';
             
             try {
-                const response = await fetch(`${API_BASE}/users/all`, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
+                const response = await fetch(`${API_BASE}/users/all`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+                const users = await response.json();
+                document.getElementById('totalUsers').textContent = users.length;
+                document.getElementById('totalTransactions').textContent = users.reduce((sum, u) => sum + (u.totalTransactions || 0), 0);
+                document.getElementById('blockedAccounts').textContent = users.filter(u => u.accountLocked).length;
+                document.getElementById('totalAlerts').textContent = users.reduce((sum, u) => sum + (u.fraudCount || 0), 0);
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        async function loadAllUsers() {
+            const container = document.getElementById('usersContainer');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading users...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/all`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+                const users = await response.json();
                 
-                if (response.ok) {
-                    const users = await response.json();
-                    resultDiv.innerHTML = `
-                        <div style="background: #d4edda; padding: 15px; border-radius: 8px; color: #155724;">
-                            <strong>✅ Success!</strong><br>
-                            Secure API call successful. Found ${users.length} users in database.
+                if (users.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><p>No users registered yet.</p></div>';
+                    return;
+                }
+                
+                let html = '<table><thead><tr><th>User ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Trust Score</th><th>Transactions</th><th>Frauds</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+                
+                users.forEach(user => {
+                    const trustClass = user.trustScore >= 70 ? 'success' : user.trustScore >= 40 ? 'warning' : 'danger';
+                    const statusBadge = user.accountLocked ? '<span class="badge danger"> Locked</span>' : '<span class="badge success">✅ Active</span>';
+                    html += `<tr>
+                        <td><code>${user.userId}</code></td>
+                        <td>${user.name || 'N/A'}</td>
+                        <td>${user.email}</td>
+                        <td>${user.phoneNumber}</td>
+                        <td><span class="badge ${trustClass}">${user.trustScore?.toFixed(1) || 100}</span></td>
+                        <td>${user.totalTransactions || 0}</td>
+                        <td>${user.fraudCount || 0}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button type="button" class="btn btn-info" onclick="viewUser('${user.userId}')">View</button>
+                            <button type="button" class="btn btn-${user.accountLocked ? 'success' : 'danger'}" onclick="toggleLock('${user.userId}', ${!user.accountLocked})">${user.accountLocked ? 'Unlock' : 'Lock'}</button>
+                        </td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = `<div class="empty-state"><p style="color: red;">❌ Error loading users</p></div>`;
+            }
+        }
+
+        async function searchUser() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) { alert('Please enter an email, phone, or user ID'); return; }
+            
+            const container = document.getElementById('searchResult');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/${encodeURIComponent(query)}`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+                const result = await response.json();
+                if (!result.success) { container.innerHTML = '<div class="empty-state"><p>❌ User not found</p></div>'; return; }
+                displayUserDetails(result, container);
+            } catch (error) {
+                container.innerHTML = `<div class="empty-state"><p style="color: red;">Error: ${error.message}</p></div>`;
+            }
+        }
+
+        async function viewUser(userId) {
+            const container = document.getElementById('searchResult');
+            document.getElementById('search').classList.add('active');
+            document.getElementById('users').classList.remove('active');
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.nav-btn')[2].classList.add('active');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/users/${userId}`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+                const result = await response.json();
+                displayUserDetails(result, container);
+            } catch (error) {
+                container.innerHTML = `<div class="empty-state"><p style="color: red;">Error: ${error.message}</p></div>`;
+            }
+        }
+
+        function displayUserDetails(user, container) {
+            const trustClass = user.trustScore >= 70 ? 'success' : user.trustScore >= 40 ? 'warning' : 'danger';
+            const statusBadge = user.accountLocked ? '<span class="badge danger">🔒 Locked</span>' : '<span class="badge success">✅ Active</span>';
+            container.innerHTML = `<div class="user-details"><h3>User Information</h3>
+                <div class="detail-row"><span class="detail-label">User ID:</span><span class="detail-value"><code>${user.userId}</code></span></div>
+                <div class="detail-row"><span class="detail-label">Name:</span><span class="detail-value">${user.name || 'N/A'}</span></div>
+                <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value">${user.email}</span></div>
+                <div class="detail-row"><span class="detail-label">Phone:</span><span class="detail-value">${user.phoneNumber}</span></div>
+                <div class="detail-row"><span class="detail-label">Trust Score:</span><span class="detail-value"><span class="badge ${trustClass}">${user.trustScore?.toFixed(1) || 100}</span></span></div>
+                <div class="detail-row"><span class="detail-label">Transactions:</span><span class="detail-value">${user.totalTransactions || 0}</span></div>
+                <div class="detail-row"><span class="detail-label">Frauds:</span><span class="detail-value">${user.fraudCount || 0}</span></div>
+                <div class="detail-row"><span class="detail-label">Status:</span><span class="detail-value">${statusBadge}</span></div>
+                <div class="detail-row"><span class="detail-label">Registered:</span><span class="detail-value">${new Date(user.createdAt).toLocaleString()}</span></div>
+                <div style="margin-top: 20px;">
+                    <button type="button" class="btn btn-info" onclick="loadUserTransactions('${user.userId}')">View Transactions</button>
+                    <button type="button" class="btn btn-${user.accountLocked ? 'success' : 'danger'}" onclick="toggleLock('${user.userId}', ${!user.accountLocked})">${user.accountLocked ? '🔓 Unlock' : '🔒 Lock'}</button>
+                </div></div><div id="userTransactions"></div>`;
+        }
+
+        async function loadUserTransactions(userId) {
+            const container = document.getElementById('userTransactions');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading transactions...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/transactions/user/${userId}`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+                const transactions = await response.json();
+                if (!transactions || transactions.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><p>No transactions yet</p></div>';
+                    return;
+                }
+                
+                let html = '<h3 style="margin: 30px 0 20px;">Transaction History</h3>';
+                transactions.forEach(tx => {
+                    const scoreClass = tx.fraudScore <= 5 ? 'safe' : tx.fraudScore <= 7 ? 'warning' : 'danger';
+                    const statusBadge = tx.status === 'APPROVED' ? '<span class="badge success">APPROVED</span>' : tx.status === 'DECLINED' ? '<span class="badge danger">DECLINED</span>' : '<span class="badge warning">REVIEW</span>';
+                    html += `<div class="transaction-item">
+                        <div class="transaction-header">
+                            <div><div class="amount">$${tx.amount.toFixed(2)} ${tx.currency}</div><div style="color: #6c757d; font-size: 0.9em; margin-top: 5px;">${new Date(tx.transactionTime).toLocaleString()}</div></div>
+                            <div style="text-align: right;"><div class="fraud-score ${scoreClass}">Score: ${tx.fraudScore?.toFixed(1) || 'N/A'}</div><div style="margin-top: 10px;">${statusBadge}</div></div>
                         </div>
-                    `;
-                } else if (response.status === 403) {
-                    resultDiv.innerHTML = `
-                        <div style="background: #f8d7da; padding: 15px; border-radius: 8px; color: #721c24;">
-                            <strong>❌ Access Denied</strong><br>
-                            Your token doesn't have admin privileges.
-                        </div>
-                    `;
-                } else if (response.status === 401) {
-                    resultDiv.innerHTML = `
-                        <div style="background: #f8d7da; padding: 15px; border-radius: 8px; color: #721c24;">
-                            <strong>❌ Unauthorized</strong><br>
-                            Your session has expired. Please login again.
-                        </div>
-                    `;
-                    setTimeout(() => logout(), 2000);
+                        <div class="detail-row"><span class="detail-label">ID:</span><span class="detail-value"><code>${tx.transactionId}</code></span></div>
+                        <div class="detail-row"><span class="detail-label">Type:</span><span class="detail-value">${tx.transactionType}</span></div>
+                        <div class="detail-row"><span class="detail-label">Merchant:</span><span class="detail-value">${tx.merchantName || 'N/A'}</span></div>
+                        ${tx.fraudReason ? `<div class="detail-row"><span class="detail-label">Fraud Reason:</span><span class="detail-value">${tx.fraudReason}</span></div>` : ''}
+                    </div>`;
+                });
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = `<div class="empty-state"><p style="color: red;">Error loading transactions</p></div>`;
+            }
+        }
+
+        async function toggleLock(userId, shouldLock) {
+            if (!confirm(`${shouldLock ? 'LOCK' : 'UNLOCK'} this account?`)) return;
+            try {
+                const response = await fetch(`${API_BASE}/users/${userId}/lock?locked=${shouldLock}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    loadAllUsers();
+                    if (document.getElementById('searchResult').innerHTML) viewUser(userId);
+                } else {
+                    alert('Error: ' + result.message);
                 }
             } catch (error) {
-                resultDiv.innerHTML = `
-                    <div style="background: #f8d7da; padding: 15px; border-radius: 8px; color: #721c24;">
-                        <strong>❌ Error</strong><br>
-                        ${error.message}
-                    </div>
-                `;
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function loadAlerts() {
+            const container = document.getElementById('alertsContainer');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading alerts...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/fraud/alerts/unreviewed`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+                const alerts = await response.json();
+                if (!alerts || alerts.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><p>✅ No unreviewed fraud alerts</p></div>';
+                    return;
+                }
+                
+                let html = '<table><thead><tr><th>Alert ID</th><th>User ID</th><th>Transaction</th><th>Score</th><th>Severity</th><th>Detected</th><th>Actions</th></tr></thead><tbody>';
+                alerts.forEach(alert => {
+                    const severityClass = alert.severity === 'HIGH' ? 'danger' : alert.severity === 'MEDIUM' ? 'warning' : 'info';
+                    html += `<tr>
+                        <td><code>${alert.id}</code></td>
+                        <td><code>${alert.userId}</code></td>
+                        <td><code>${alert.transactionId}</code></td>
+                        <td><strong>${alert.fraudScore?.toFixed(1) || 'N/A'}</strong></td>
+                        <td><span class="badge ${severityClass}">${alert.severity}</span></td>
+                        <td>${new Date(alert.detectedAt).toLocaleString()}</td>
+                        <td><button class="btn btn-info" onclick="viewUser('${alert.userId}')">View User</button></td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = `<div class="empty-state"><p style="color: red;">Error loading alerts</p></div>`;
             }
         }
     </script>
