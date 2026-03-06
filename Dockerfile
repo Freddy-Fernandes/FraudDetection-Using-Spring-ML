@@ -18,6 +18,22 @@ WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
 
+
+
+RUN apk add --no-cache python3 py3-pip && \
+    pip3 install --break-system-packages \
+        numpy==1.24.3 \
+        pandas==2.0.3 \
+        scikit-learn==1.3.0 \
+        joblib==1.3.2
+
+# Copy ML model files
+COPY model/fraud_model_best.pkl /app/
+COPY model/fraud_scaler.pkl /app/
+COPY model/fraud_features.pkl /app/
+COPY model/predict_fraud.py /app/
+RUN chmod +x /app/predict_fraud.py
+
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
