@@ -126,6 +126,24 @@ public class FraudDetectionService {
     }
 
     /**
+     * Pre-transaction fraud check (before processing)
+     * Used by TransactionService
+     */
+    public FraudDetectionResult preTransactionCheck(Transaction transaction) {
+        log.info("Running pre-transaction fraud check for transaction: {}", transaction.getTransactionId());
+        return detectFraud(transaction);
+    }
+
+    /**
+     * Post-transaction fraud check (after processing)
+     * Used by TransactionService for additional validation
+     */
+    public FraudDetectionResult postTransactionCheck(Transaction transaction) {
+        log.info("Running post-transaction fraud check for transaction: {}", transaction.getTransactionId());
+        return detectFraud(transaction);
+    }
+
+    /**
      * Fraud Statistics DTO - Inner class
      */
     @Data
