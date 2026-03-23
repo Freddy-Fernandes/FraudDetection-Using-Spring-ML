@@ -337,7 +337,6 @@ public class MLFraudDetectionService {
         if (calculateFailedAttemptsScore(behavior) > 0.5) {
             explanation.append("Recent failed transaction attempts. ");
         }
-
         return explanation.toString().trim();
     }
 }
