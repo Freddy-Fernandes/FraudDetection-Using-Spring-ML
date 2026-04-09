@@ -195,7 +195,9 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-                const result = await response.json();
+                console.log('Response status:', response.status);
+    const data = await response.json();
+    console.log('Response data:', data);
                 
                 if (result.success && result.role === 'ADMIN') {
                     authToken = result.token;
