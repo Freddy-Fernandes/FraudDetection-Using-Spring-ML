@@ -182,41 +182,49 @@
             }
         });
 
-        async function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const errorDiv = document.getElementById('loginError');
-            errorDiv.classList.add('hidden');
+        async function handleLogin(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!email || !password) {
+        showError('Please enter email and password');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        console.log('Login response:', data);
+        
+        if (response.ok && data.token) {
+            // Login successful
+            authToken = data.token;
+            localStorage.setItem('adminToken', authToken);
+            localStorage.setItem('adminUser', JSON.stringify(data));
             
-            try {
-                const response = await fetch(`${API_BASE}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-                console.log('Response status:', response.status);
-    const data = await response.json();
-    console.log('Response data:', data);
-                
-                if (result.success && result.role === 'ADMIN') {
-                    authToken = result.token;
-                    currentUser = { email: result.email, name: result.name, role: result.role, userId: result.userId };
-                    localStorage.setItem('adminToken', authToken);
-                    localStorage.setItem('adminUser', JSON.stringify(currentUser));
-                    showDashboard();
-                    loadDashboard();
-                } else if (result.role !== 'ADMIN') {
-                    showError('Access denied. Admin privileges required.');
-                } else {
-                    showError(result.message || 'Login failed');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                showError('Login failed. Please check your connection.');
-            }
+            // Show dashboard
+            showDashboard();
+            loadDashboard();
+        } else {
+            // Login failed
+            showError(data.message || 'Invalid email or password');
         }
-
+    } catch (error) {
+        console.error('Login error:', error);
+        showError('Login failed. Please check your connection.');
+    }
+}
+                
+                
         function showError(message) {
             const errorDiv = document.getElementById('loginError');
             errorDiv.textContent = message;
