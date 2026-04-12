@@ -39,12 +39,7 @@ public class SecurityConfiguration {
                                                 .permitAll()
 
                                                 // Admin-only endpoints
-                                                .requestMatchers(
-                                                                "/api/users/all",
-                                                                "/api/users/*/lock",
-                                                                "/api/users/*/trust-score",
-                                                                "/api/fraud/alerts/unreviewed")
-                                                .hasRole("ADMIN")
+                                                
 
                                                 // Authenticated endpoints
                                                 .anyRequest().permitAll());
