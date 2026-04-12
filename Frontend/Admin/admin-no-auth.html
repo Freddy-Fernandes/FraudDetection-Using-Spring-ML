@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Fraud Detection</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar h1 { 
+            font-size: 26px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+        .stat-card h3 {
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-card .value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        .stat-card .change {
+            font-size: 13px;
+            color: #10b981;
+        }
+        .stat-card.primary { border-left: 4px solid #667eea; }
+        .stat-card.primary .value { color: #667eea; }
+        .stat-card.success { border-left: 4px solid #10b981; }
+        .stat-card.success .value { color: #10b981; }
+        .stat-card.warning { border-left: 4px solid #f59e0b; }
+        .stat-card.warning .value { color: #f59e0b; }
+        .stat-card.danger { border-left: 4px solid #ef4444; }
+        .stat-card.danger .value { color: #ef4444; }
+        
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #f8fafc;
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            font-size: 13px;
+            border-bottom: 2px solid #e2e8f0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 16px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-size: 14px;
+        }
+        tr:hover { background: #f8fafc; }
+        
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge.safe { background: #dcfce7; color: #166534; }
+        .badge.suspicious { background: #fef3c7; color: #92400e; }
+        .badge.fraud { background: #fee2e2; color: #991b1b; }
+        .badge.approved { background: #dbeafe; color: #1e40af; }
+        .badge.completed { background: #dcfce7; color: #166534; }
+        .badge.blocked { background: #fee2e2; color: #991b1b; }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+        .error {
+            text-align: center;
+            padding: 3rem;
+            color: #ef4444;
+        }
+        .empty {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+        }
+        
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            float: right;
+            transition: background 0.2s;
+        }
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+        
+        .user-id {
+            font-family: 'Courier New', monospace;
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .trust-score {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .trust-bar {
+            width: 60px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .trust-fill {
+            height: 100%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🛡️ Fraud Detection Admin Dashboard</h1>
+    </div>
+
+    <div class="container">
+        <!-- Stats Dashboard -->
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <h3>Total Users</h3>
+                <div class="value" id="totalUsers">0</div>
+                <div class="change">Active accounts</div>
+            </div>
+            <div class="stat-card success">
+                <h3>Safe Transactions</h3>
+                <div class="value" id="safeTransactions">0</div>
+                <div class="change">No fraud detected</div>
+            </div>
+            <div class="stat-card warning">
+                <h3>Under Review</h3>
+                <div class="value" id="suspiciousTransactions">0</div>
+                <div class="change">Needs manual review</div>
+            </div>
+            <div class="stat-card danger">
+                <h3>Fraud Blocked</h3>
+                <div class="value" id="fraudTransactions">0</div>
+                <div class="change">Threats prevented</div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="section">
+            <h2>
+                📊 Recent Transactions
+                <button class="refresh-btn" onclick="loadAllData()">↻ Refresh</button>
+            </h2>
+            <div style="clear: both;"></div>
+            <div id="transactionsTable">
+                <div class="loading">Loading transactions...</div>
+            </div>
+        </div>
+
+        <!-- All Users -->
+        <div class="section">
+            <h2>👥 All Users</h2>
+            <div id="usersTable">
+                <div class="loading">Loading users...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // UPDATE THIS LINE with your actual backend URL
+        const API_BASE = 'https://frauddetection-using-spring-ml.onrender.com/api';
+        
+        let allUsers = [];
+        let allTransactions = [];
+
+        async function loadAllData() {
+            await loadUsers();
+            await loadTransactions();
+            updateStats();
+        }
+
+        async function loadUsers() {
+            try {
+                console.log('Fetching users from:', `${API_BASE}/users/all`);
+                
+                const response = await fetch(`${API_BASE}/users/all`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('Users response status:', response.status);
+
+                if (response.ok) {
+                    allUsers = await response.json();
+                    console.log('Users loaded:', allUsers.length);
+                    renderUsers();
+                } else {
+                    const errorText = await response.text();
+                    console.error('Error loading users:', response.status, errorText);
+                    document.getElementById('usersTable').innerHTML = 
+                        `<div class="error">Failed to load users (${response.status}). Check console for details.</div>`;
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                document.getElementById('usersTable').innerHTML = 
+                    `<div class="error">Connection error: ${error.message}</div>`;
+            }
+        }
+
+        async function loadTransactions() {
+            try {
+                console.log('Fetching transactions from:', `${API_BASE}/transactions`);
+                
+                // Try different endpoints
+                let response = await fetch(`${API_BASE}/transactions/all`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    // Try alternative endpoint
+                    response = await fetch(`${API_BASE}/transactions`, {
+                        method: 'GET'
+                    });
+                }
+
+                console.log('Transactions response status:', response.status);
+
+                if (response.ok) {
+                    allTransactions = await response.json();
+                    console.log('Transactions loaded:', allTransactions.length);
+                    renderTransactions();
+                } else {
+                    console.warn('No transactions endpoint available');
+                    document.getElementById('transactionsTable').innerHTML = 
+                        '<div class="empty">No transactions endpoint available. Create transactions via user portal.</div>';
+                }
+            } catch (error) {
+                console.error('Error fetching transactions:', error);
+                document.getElementById('transactionsTable').innerHTML = 
+                    `<div class="empty">No transactions yet. Make a transaction via the user portal.</div>`;
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('totalUsers').textContent = allUsers.length;
+            
+            const safe = allTransactions.filter(t => 
+                t.fraudStatus === 'SAFE' || t.status === 'COMPLETED'
+            ).length;
+            const suspicious = allTransactions.filter(t => 
+                t.fraudStatus === 'SUSPICIOUS'
+            ).length;
+            const fraud = allTransactions.filter(t => 
+                t.fraudStatus === 'FRAUD' || t.status === 'BLOCKED'
+            ).length;
+
+            document.getElementById('safeTransactions').textContent = safe;
+            document.getElementById('suspiciousTransactions').textContent = suspicious;
+            document.getElementById('fraudTransactions').textContent = fraud;
+        }
+
+        function renderUsers() {
+            const container = document.getElementById('usersTable');
+            
+            if (allUsers.length === 0) {
+                container.innerHTML = '<div class="empty">No users registered yet</div>';
+                return;
+            }
+
+            const html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Email</th>
+                            <th>Name</th>
+                            <th>Trust Score</th>
+                            <th>Transactions</th>
+                            <th>Fraud Count</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${allUsers.map(user => {
+                            const trustScore = user.trustScore || 0;
+                            const trustColor = trustScore >= 70 ? '#10b981' : 
+                                             trustScore >= 50 ? '#f59e0b' : '#ef4444';
+                            const trustPercent = trustScore;
+                            
+                            return `
+                            <tr>
+                                <td><span class="user-id">${user.userId}</span></td>
+                                <td>${user.email}</td>
+                                <td>${user.name || 'N/A'}</td>
+                                <td>
+                                    <div class="trust-score">
+                                        <span style="color: ${trustColor}; font-weight: 600;">${trustScore}</span>
+                                        <div class="trust-bar">
+                                            <div class="trust-fill" style="width: ${trustPercent}%; background: ${trustColor};"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>${user.totalTransactions || 0}</td>
+                                <td>
+                                    <span style="color: ${user.fraudCount > 0 ? '#ef4444' : '#10b981'}; font-weight: 600;">
+                                        ${user.fraudCount || 0}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge ${user.accountLocked ? 'blocked' : 'approved'}">
+                                        ${user.accountLocked ? 'Locked' : 'Active'}
+                                    </span>
+                                </td>
+                            </tr>
+                        `}).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function renderTransactions() {
+            const container = document.getElementById('transactionsTable');
+            
+            if (allTransactions.length === 0) {
+                container.innerHTML = '<div class="empty">No transactions yet</div>';
+                return;
+            }
+
+            const recent = allTransactions.slice(0, 15);
+
+            const html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>User ID</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                            <th>Fraud Score</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${recent.map(tx => {
+                            const fraudStatus = tx.fraudStatus || 
+                                (tx.status === 'BLOCKED' ? 'FRAUD' : 'SAFE');
+                            
+                            return `
+                            <tr>
+                                <td><span class="user-id">${tx.transactionId}</span></td>
+                                <td><span class="user-id">${tx.userId}</span></td>
+                                <td style="font-weight: 600;">$${(tx.amount || 0).toFixed(2)}</td>
+                                <td>${tx.transactionType || 'N/A'}</td>
+                                <td>
+                                    <span style="color: ${tx.fraudScore > 7 ? '#ef4444' : tx.fraudScore > 5 ? '#f59e0b' : '#10b981'}">
+                                        ${tx.fraudScore ? tx.fraudScore.toFixed(1) : 'N/A'}/10
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge ${fraudStatus.toLowerCase()}">
+                                        ${fraudStatus}
+                                    </span>
+                                </td>
+                                <td>${new Date(tx.transactionTime || tx.createdAt).toLocaleString()}</td>
+                            </tr>
+                        `}).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        // Load data on page load
+        loadAllData();
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadAllData, 30000);
+    </script>
+</body>
+</html>

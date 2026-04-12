@@ -47,10 +47,7 @@ public class SecurityConfiguration {
                                                 .hasRole("ADMIN")
 
                                                 // Authenticated endpoints
-                                                .anyRequest().authenticated())
-                                .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                                                .anyRequest().permitAll());
 
                 return http.build();
         }
